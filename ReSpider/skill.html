@@ -81,7 +81,7 @@
             },
             methods: {
                 fetchAllSkills() {
-                    axios.get("https://saberwithhutao-rgb.github.io/respider-api-data/skills.json").then((result) => {
+                    axios.get("https://saberwithhutao-rgb.github.io/respider-wiki/ReSpider/data/skills.json").then((result) => {
                         this.allSkills = result.data.data;
                         this.skills = result.data.data;
                     }).catch((err) => {

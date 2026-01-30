@@ -28,34 +28,51 @@
         <div class="wiki-content">
             <div id="character-detail-content">
                 <div v-if="loading">加载中...</div>
-                <div v-else-if="character">
-                    <h1>{{ character.name }}</h1>
-                    <h3>{{ character.name_jp }}</h3>
+                <div v-else-if="character" class="character-detail-wrapper">
+                    <h1 class="character-name">{{ character.name }}</h1>
+                    <h3 class="character-name-jp">{{ character.name_jp }}</h3>
                     
-                    <div style="display: flex; gap: 30px; margin-top: 20px;">
-                        <div style="flex: 1;">
-                            <img :src="character.image" :alt="character.name" style="max-width: 300px;">
+                    <div class="character-detail-flex">
+                        <div class="character-image-section">
+                            <img :src="character.image" :alt="character.name" class="character-detail-image">
                         </div>
-                        <div style="flex: 2;">
-                            <p><strong>年龄：</strong>{{ character.age }}</p>
-                            <p><strong>性别：</strong>{{ character.gender }}</p>
-                            <p><strong>种族：</strong>{{ character.race }}</p>
+                        <div class="character-info-section">
+                            <div class="character-info-item">
+                                <span class="info-label">序号：</span>
+                                <span class="info-value">{{ character.id }}</span>
+                            </div>
+                            <div class="character-info-item">
+                                <span class="info-label">年龄：</span>
+                                <span class="info-value">{{ character.age }}</span>
+                            </div>
+                            <div class="character-info-item">
+                                <span class="info-label">性别：</span>
+                                <span class="info-value">{{ character.gender }}</span>
+                            </div>
+                            <div class="character-info-item">
+                                <span class="info-label">种族：</span>
+                                <span class="info-value">{{ character.race }}</span>
+                            </div>
                             
-                            <p v-if="character.alias && character.alias.length > 0">
-                                <strong>别名：</strong>
-                                {{ Array.isArray(character.alias) ? character.alias.join('、') : character.alias }}
-                            </p>
+                            <div v-if="character.alias && character.alias.length > 0" class="character-info-item">
+                                <span class="info-label">别名：</span>
+                                <span class="info-value">
+                                    {{ Array.isArray(character.alias) ? character.alias.join('、') : character.alias }}
+                                </span>
+                            </div>
                             
-                            <p v-if="character.tags && character.tags.length > 0">
-                                <strong>标签：</strong>
-                                {{ Array.isArray(character.tags) ? character.tags.join('、') : character.tags }}
-                            </p>
+                            <div v-if="character.tags && character.tags.length > 0" class="character-info-item">
+                                <span class="info-label">标签：</span>
+                                <span class="info-value tags-display">
+                                    {{ Array.isArray(character.tags) ? character.tags.join('、') : character.tags }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div style="margin-top: 30px;">
-                        <h2>生平</h2>
-                        <div style="white-space: pre-line; line-height: 1.6;">
+                    <div class="biography-section">
+                        <h2 class="section-title">生平</h2>
+                        <div class="biography-content">
                             {{ character.biography }}
                         </div>
                     </div>
@@ -102,6 +119,7 @@
                         }
                     } catch (error) {
                         console.error('加载人物数据失败:', error);
+                        alert('加载人物数据失败');
                     } finally {
                         this.loading = false;
                     }

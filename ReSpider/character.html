@@ -92,14 +92,15 @@
                 this.fetchAllCharacters();
             },
             methods: {
-                fetchAllCharacters() {
-                    axios.get("https://saberwithhutao-rgb.github.io/respider-wiki/ReSpider/data/characters.json").then((result) => {
+                async fetchAllCharacters() {
+                    try {
+                        const result = await axios.get("https://saberwithhutao-rgb.github.io/respider-wiki/ReSpider/data/characters.json");
                         this.allCharacters = result.data.data;
                         this.characters = result.data.data;
-                        console.log('获取人物成功', this.allCharacters)
-                    }).catch((err) => {
+                    } catch (err) {
+                        console.error("获取人物失败:", err);
                         alert("获取人物失败");
-                    });
+                    }
                 },
                 viewDetail(characterId) {
                     // 跳转到人物详情页，传递人物ID作为参数

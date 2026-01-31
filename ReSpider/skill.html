@@ -80,13 +80,15 @@
                 this.fetchAllSkills();
             },
             methods: {
-                fetchAllSkills() {
-                    axios.get("https://saberwithhutao-rgb.github.io/respider-wiki/ReSpider/data/skills.json").then((result) => {
+                async fetchAllSkills() {
+                    try {
+                        const result = await axios.get("https://saberwithhutao-rgb.github.io/respider-wiki/ReSpider/data/skills.json");
                         this.allSkills = result.data.data;
                         this.skills = result.data.data;
-                    }).catch((err) => {
+                    } catch (err) {
+                        console.error("获取技能失败:", err);
                         alert("获取技能失败");
-                    });
+                    }
                 },
                 search() {
                     // 使用过滤函数

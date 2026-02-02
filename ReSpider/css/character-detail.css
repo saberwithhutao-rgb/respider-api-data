@@ -1,19 +1,19 @@
 /* 人物详情页面布局 */
 .character-detail-wrapper {
-    max-width: 1160px;
+    max-width: 1160px;  /* 保持桌面端原最大宽度 */
     margin: 0 auto;
     background-color: #fff;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 30px;
+    padding: 30px;      /* 保持桌面端原内边距 */
     font-family: 'Arial', sans-serif;
-    font-size: 18px;
+    font-size: 18px;    /* 保持桌面端原字体大小 */
 }
 
 /* 标题样式 */
 .character-name {
-    font-size: 32px;
+    font-size: 32px;    /* 保持桌面端原字体大小 */
     color: #333;
     margin: 0 0 10px 0;
     padding-bottom: 10px;
@@ -21,7 +21,7 @@
 }
 
 .character-name-jp {
-    font-size: 22px;
+    font-size: 22px;    /* 保持桌面端原字体大小 */
     color: #666;
     margin: 0 0 20px 0;
     font-style: italic;
@@ -30,7 +30,7 @@
 /* 人物详细信息布局 */
 .character-detail-flex {
     display: flex;
-    gap: 30px;
+    gap: 30px;          /* 保持桌面端原间距 */
     margin-top: 20px;
 }
 
@@ -42,13 +42,13 @@
     flex: 2;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 12px;          /* 保持桌面端原间距 */
 }
 
 /* 图片样式 */
 .character-detail-image {
     width: 100%;
-    max-width: 300px;
+    max-width: 300px;   /* 保持桌面端原最大宽度 */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s ease;
@@ -62,13 +62,13 @@
 .character-info-item {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 10px;          /* 保持桌面端原间距 */
 }
 
 .info-label {
     font-weight: bold;
     color: #333;
-    min-width: 60px;
+    min-width: 60px;    /* 保持桌面端原最小宽度 */
     flex-shrink: 0;
 }
 
@@ -81,9 +81,9 @@
 .tags-display {
     background-color: #e6f7ff;
     color: #1890ff;
-    padding: 4px 12px;
+    padding: 4px 12px;  /* 保持桌面端原内边距 */
     border-radius: 20px;
-    font-size: 14px;
+    font-size: 14px;    /* 保持桌面端原字体大小 */
     font-weight: 500;
     display: inline-block;
     margin-top: 4px;
@@ -91,11 +91,11 @@
 
 /* 生平部分样式 */
 .biography-section {
-    margin-top: 30px;
+    margin-top: 30px;   /* 保持桌面端原间距 */
 }
 
 .section-title {
-    font-size: 24px;
+    font-size: 24px;    /* 保持桌面端原字体大小 */
     color: #333;
     margin: 0 0 15px 0;
     padding-bottom: 10px;
@@ -103,49 +103,80 @@
 }
 
 .biography-content {
-    padding: 15px;
+    padding: 15px;      /* 保持桌面端原内边距 */
     background-color: #fafafa;
     border-radius: 8px;
     color: #555;
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 16px;    /* 保持桌面端原字体大小 */
+    line-height: 1.6;   /* 保持桌面端原行高 */
     white-space: pre-line;
 }
 
-/* 响应式设计 */
+/* 手机端适配 - 保持桌面端布局不变 */
 @media screen and (max-width: 768px) {
-    .character-detail-flex {
-        flex-direction: column;
-    }
-    
     .character-detail-wrapper {
-        padding: 20px;
+        padding: 20px;  /* 手机端缩小内边距 */
     }
     
     .character-name {
-        font-size: 26px;
+        font-size: 26px; /* 手机端缩小字体 */
     }
     
     .character-name-jp {
-        font-size: 18px;
+        font-size: 18px; /* 手机端缩小字体 */
+    }
+    
+    .character-detail-flex {
+        flex-direction: column; /* 手机端垂直布局 */
+        gap: 20px;       /* 手机端调整间距 */
+    }
+    
+    .character-image-section {
+        text-align: center; /* 手机端居中图片 */
+    }
+    
+    .character-info-section {
+        gap: 10px;       /* 手机端缩小间距 */
     }
     
     .section-title {
-        font-size: 20px;
+        font-size: 20px; /* 手机端缩小字体 */
+    }
+    
+    .character-info-item {
+        gap: 8px;        /* 手机端缩小间距 */
+    }
+    
+    .info-label {
+        min-width: 70px; /* 手机端调整最小宽度 */
     }
 }
 
 @media screen and (max-width: 500px) {
     .character-detail-wrapper {
-        padding: 15px;
+        padding: 15px;   /* 更小屏幕缩小内边距 */
+        font-size: 16px; /* 更小屏幕缩小字体 */
+    }
+    
+    .character-name {
+        font-size: 24px; /* 更小屏幕缩小字体 */
+    }
+    
+    .character-name-jp {
+        font-size: 16px; /* 更小屏幕缩小字体 */
     }
     
     .character-info-item {
-        flex-direction: column;
-        gap: 4px;
+        flex-direction: column; /* 更小屏幕垂直布局 */
+        gap: 4px;        /* 更小屏幕缩小间距 */
     }
     
     .info-label {
-        min-width: auto;
+        min-width: auto; /* 更小屏幕不设最小宽度 */
+    }
+    
+    .biography-content {
+        padding: 12px;   /* 更小屏幕缩小内边距 */
+        font-size: 15px; /* 更小屏幕缩小字体 */
     }
 }

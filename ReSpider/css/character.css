@@ -1,11 +1,11 @@
 /* 人物表格样式 */
 .character-table {
-    width: 1160px;
+    width: 1160px;  /* 保持桌面端原宽度 */
     border-collapse: collapse;
     margin: 20px auto;
     font-size: 18px;              /* 增大整体字体大小 */
     font-family: 'Arial', sans-serif;
-    min-width: 600px;
+    min-width: 600px;  /* 保持桌面端原最小宽度 */
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -20,7 +20,7 @@
 
 .character-table th,
 .character-table td {
-    padding: 15px 12px;
+    padding: 15px 12px;  /* 保持桌面端原内边距 */
     text-align: center;           /* 之前修改为居中 */
     border-bottom: 1px solid #dddddd;
 }
@@ -61,8 +61,8 @@
 /* 图片单元格特殊样式 */
 .character-table td img {
     border-radius: 8px;
-    max-width: 80px;
-    max-height: 80px;
+    max-width: 80px;    /* 保持桌面端原最大宽度 */
+    max-height: 80px;   /* 保持桌面端原最大高度 */
     object-fit: cover;
     transition: transform 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -72,35 +72,68 @@
     transform: scale(1.2);
 }
 
-/* 响应式设计 */
+/* 响应式设计 - 保持桌面端布局不变 */
+@media screen and (max-width: 1200px) {
+    .character-table {
+        width: 95vw;  /* 接近全宽但不超过 */
+        max-width: 1160px;  /* 保持最大宽度限制 */
+    }
+    
+    .search-form {
+        width: 95vw;  /* 接近全宽但不超过 */
+        max-width: 1160px;  /* 保持最大宽度限制 */
+    }
+}
+
 @media screen and (max-width: 768px) {
     .character-table {
         font-size: 16px;         /* 平板上字体大小 */
-        min-width: 400px;
+        min-width: 100%;         /* 手机端最小宽度设为100% */
+        width: 100%;             /* 手机端全宽 */
     }
     
     .character-table th,
     .character-table td {
-        padding: 10px 8px;
+        padding: 10px 6px;       /* 手机端缩小内边距 */
+    }
+    
+    .character-table td img {
+        max-width: 60px;         /* 手机端缩小图片 */
+        max-height: 60px;
+    }
+    
+    /* 当屏幕太小时，允许水平滚动 */
+    .character-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* iOS 滚动优化 */
     }
 }
 
 @media screen and (max-width: 500px) {
     .character-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
+        font-size: 14px;         /* 更小屏幕字体大小 */
+        min-width: 800px;        /* 确保表格有足够宽度供水平滚动 */
+    }
+    
+    .character-table th,
+    .character-table td {
+        padding: 8px 4px;        /* 更小屏幕缩小内边距 */
+    }
+    
+    .character-table td img {
+        max-width: 50px;         /* 更小屏幕进一步缩小图片 */
+        max-height: 50px;
     }
 }
 
 /* 搜索表单样式 - 与技能页面保持一致 */
 .search-form {
-    width: 1160px;
+    width: 1160px;  /* 保持桌面端原宽度 */
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
-    padding: 20px;
+    gap: 12px;      /* 保持桌面端原间距 */
+    padding: 20px;  /* 保持桌面端原内边距 */
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     border-radius: 10px;
     margin: 20px auto;
@@ -109,10 +142,10 @@
 }
 
 .search-input {
-    padding: 12px 15px;
+    padding: 12px 15px;  /* 保持桌面端原内边距 */
     border: 2px solid #ddd;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 16px;     /* 保持桌面端原字体大小 */
     transition: all 0.3s ease;
     background-color: #fff;
     outline: none;
@@ -128,10 +161,10 @@
 }
 
 .search-btn, .reset-btn {
-    padding: 12px 24px;
+    padding: 12px 24px;  /* 保持桌面端原内边距 */
     border: none;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 16px;     /* 保持桌面端原字体大小 */
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -164,33 +197,45 @@
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* 移动端适配 */
+/* 手机端搜索表单适配 */
 @media screen and (max-width: 768px) {
     .search-form {
-        flex-direction: row; /* 保持水平排列 */
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        padding: 15px;
-        width: 1160px; /* 在较小屏幕上也保持固定宽度 */
+        width: 95vw;  /* 手机端接近全宽 */
+        max-width: 1160px;  /* 保持最大宽度限制 */
+        flex-wrap: wrap;     /* 手机端允许换行 */
+        gap: 8px;           /* 手机端缩小间距 */
+        padding: 15px;      /* 手机端缩小内边距 */
     }
     
     .search-input {
-        max-width: none;
-        flex: 1;
-        min-width: 150px;
+        padding: 10px 12px;  /* 手机端缩小内边距 */
+        font-size: 15px;     /* 手机端缩小字体 */
+        max-width: none;     /* 手机端不限制最大宽度 */
+        flex: 1 1 100px;     /* 手机端弹性调整 */
+        min-width: 100px;    /* 手机端最小宽度 */
     }
     
     .search-btn, .reset-btn {
-        width: auto;
-        min-width: 90px;
-        padding: 10px 15px;
+        padding: 10px 16px;  /* 手机端缩小内边距 */
+        font-size: 15px;     /* 手机端缩小字体 */
+        width: auto;         /* 手机端自适应宽度 */
+        min-width: 80px;     /* 手机端最小宽度 */
     }
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 480px) {
     .search-form {
-        width: 95vw;
-        max-width: 1160px;
+        flex-direction: column; /* 更小屏幕垂直布局 */
+        align-items: stretch;   /* 拉伸子元素 */
+    }
+    
+    .search-input {
+        font-size: 14px;     /* 更小屏幕缩小字体 */
+        margin-bottom: 8px;  /* 添加底部间距 */
+    }
+    
+    .search-btn, .reset-btn {
+        font-size: 14px;     /* 更小屏幕缩小字体 */
+        margin: 4px 0;       /* 添加上下间距 */
     }
 }

@@ -3,11 +3,11 @@
     display: flex;
     flex-direction: column;
     height: 70vh;
-    max-width: 800px;
+    max-width: 800px;  /* 保持桌面端原最大宽度 */
     margin: 0 auto;
     background: rgba(255, 255, 255, 0.95); /* 主要改动：白色半透背景 */
     border-radius: 16px; /* 增大圆角 */
-    padding: 24px; /* 增加内边距 */
+    padding: 24px; /* 保持桌面端原内边距 */
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* 添加柔和阴影 */
     color: #333; /* 将默认文字颜色改为深灰 */
 }
@@ -15,20 +15,20 @@
 .chat-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 20px; /* 保持桌面端原内边距 */
     background: rgba(249, 250, 251, 0.8); /* 浅灰色背景 */
     border-radius: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* 保持桌面端原间距 */
     border: 1px solid rgba(209, 213, 219, 0.5); /* 添加细边框 */
 }
 
 .message {
-    margin-bottom: 16px;
-    padding: 12px 16px;
+    margin-bottom: 16px; /* 保持桌面端原间距 */
+    padding: 12px 16px; /* 保持桌面端原内边距 */
     border-radius: 12px; /* 增大消息气泡圆角 */
-    max-width: 85%;
+    max-width: 85%; /* 保持桌面端原最大宽度 */
     word-wrap: break-word;
-    line-height: 1.5;
+    line-height: 1.5; /* 保持桌面端原行高 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 给消息添加轻微阴影 */
 }
 
@@ -74,12 +74,12 @@
 
 .input-area {
     display: flex;
-    gap: 12px;
+    gap: 12px; /* 保持桌面端原间距 */
 }
 
 .input-area textarea {
     flex: 1;
-    padding: 14px 16px;
+    padding: 14px 16px; /* 保持桌面端原内边距 */
     border: 1px solid #d1d5db;
     border-radius: 12px;
     background: white;
@@ -89,7 +89,7 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
     /* ========== 修改结束 ========== */
     resize: vertical;
-    min-height: 60px;
+    min-height: 60px; /* 保持桌面端原最小高度 */
     transition: all 0.2s;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     line-height: 1.5; /* 增加行高，使文字更舒展 */
@@ -102,7 +102,7 @@
 }
 
 .input-area button {
-    padding: 0 28px;
+    padding: 0 28px; /* 保持桌面端原内边距 */
     background: linear-gradient(135deg, #3b82f6, #1d4ed8); /* 与用户消息呼应的渐变 */
     color: white;
     border: none;
@@ -128,4 +128,68 @@
     background: #9ca3af; /* 禁用时灰色 */
     cursor: not-allowed;
     box-shadow: none;
+}
+
+/* 手机端适配 - 保持桌面端布局不变 */
+@media screen and (max-width: 768px) {
+    #ai-assistant {
+        height: 65vh;  /* 手机端调整高度 */
+        max-width: 95vw; /* 手机端接近全宽 */
+        padding: 16px; /* 手机端缩小内边距 */
+        border-radius: 12px;
+    }
+    
+    .chat-messages {
+        padding: 12px; /* 手机端缩小内边距 */
+        margin-bottom: 12px; /* 手机端缩小间距 */
+    }
+    
+    .message {
+        margin-bottom: 12px; /* 手机端缩小间距 */
+        padding: 10px 12px; /* 手机端缩小内边距 */
+        max-width: 90%; /* 手机端增大最大宽度 */
+        font-size: 14px; /* 手机端缩小字体 */
+    }
+    
+    .message-header {
+        font-size: 0.85em; /* 手机端缩小字体 */
+    }
+    
+    .time {
+        font-size: 0.8em; /* 手机端缩小时间字体 */
+    }
+    
+    .input-area {
+        flex-direction: column; /* 手机端垂直布局 */
+        gap: 8px; /* 手机端缩小间距 */
+    }
+    
+    .input-area textarea {
+        padding: 12px; /* 手机端缩小内边距 */
+        min-height: 80px; /* 手机端增加最小高度以适应触摸 */
+    }
+    
+    .input-area button {
+        padding: 12px 20px; /* 手机端调整按钮样式 */
+        align-self: stretch; /* 手机端按钮拉伸 */
+        height: auto; /* 手机端自适应高度 */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #ai-assistant {
+        height: 60vh; /* 更小屏幕调整高度 */
+        padding: 12px; /* 更小屏幕缩小内边距 */
+    }
+    
+    .message {
+        padding: 8px 10px; /* 更小屏幕缩小内边距 */
+        font-size: 13px; /* 更小屏幕缩小字体 */
+        max-width: 95%; /* 更小屏幕更大宽度 */
+    }
+    
+    .input-area textarea {
+        padding: 10px; /* 更小屏幕缩小内边距 */
+        font-size: 14px; /* 更小屏幕适当增大字体以方便输入 */
+    }
 }

@@ -83,7 +83,7 @@
             methods: {
                 async fetchAllSkills() {
                     try {
-                        const result = await axios.get("https://saberwithhutao-rgb.github.io/respider-wiki/ReSpider/data/skills.json");
+                        const result = await axios.get("data/skills.json"); 
                         this.allSkills = result.data.data;
                         this.skills = result.data.data;
                     } catch (err) {

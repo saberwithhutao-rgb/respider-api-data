@@ -95,7 +95,7 @@
             methods: {
                 async fetchAllCharacters() {
                     try {
-                        const result = await axios.get("https://saberwithhutao-rgb.github.io/respider-wiki/ReSpider/data/characters.json");
+                        const result = await axios.get("data/characters.json");
                         this.allCharacters = result.data.data;
                         this.characters = result.data.data;
                     } catch (err) {

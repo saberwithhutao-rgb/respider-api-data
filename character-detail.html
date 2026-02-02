@@ -107,7 +107,7 @@
                         const characterId = parseInt(urlParams.get('id')) || 1;
                         
                         // 2. 请求所有人物数据
-                        const response = await axios.get("https://saberwithhutao-rgb.github.io/respider-wiki/ReSpider/data/characters.json");
+                        const response = await axios.get("data/characters.json");
                         
                         if (response.data.code === 200) {
                             // 3. 根据ID查找对应人物

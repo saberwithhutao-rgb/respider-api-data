@@ -49,6 +49,7 @@
                         v-model="userInput" 
                         placeholder="输入您的问题..."
                         @keydown.enter.prevent="sendMessage"
+                        @keydown.shift.enter.exact="handleShiftEnter"
                         rows="3"
                     ></textarea>
                     <button @click="sendMessage" :disabled="isLoading">
@@ -60,165 +61,188 @@
     </div>
     
     <script type="module">
-    import { createApp } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+        import { createApp, ref, onMounted, nextTick, watch } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 
+        createApp({
+            setup() {
+                // 响应式数据
+                const userInput = ref('');
+                const messages = ref([]);
+                const isLoading = ref(false);
+                const messagesContainer = ref(null); // DOM 引用
+                let abortController = null; // 用于取消请求
 
-    createApp({
-        data() {
-            return {
-                userInput: '',
-                messages: [],
-                isLoading: false,
-                currentStreamingMessage: '',
-                isStreaming: false
-            }
-        },
-        mounted() {
-            // 添加欢迎消息
-            this.messages.push({
-                id: 0,
-                role: 'assistant',
-                content: '你好！我是ReSpider Wiki的AI助手，有什么可以帮助您的吗？',
-                timestamp: new Date()
-            });
-        },
-        methods: {
-            formatTime(timestamp) {
-                if (!timestamp) return '';
-                const date = new Date(timestamp);
-                // 格式化为 时:分:秒
-                return date.toLocaleTimeString('zh-CN', { hour12: false });
-            },
-            async sendMessage() {
-                if (!this.userInput.trim() || this.isLoading) return;
-                
-                // 添加用户消息
-                const userMessage = this.userInput.trim();
-                this.messages.push({
-                    id: Date.now(),
-                    role: 'user',
-                    content: userMessage,
-                    timestamp: new Date()
-                });
-                
-                // 清空输入框
-                this.userInput = '';
-                
-                // 开始加载
-                this.isLoading = true;
-                
-                try {
-                    await this.sendNormalRequest(userMessage);
-                } catch (error) {
-                    console.error('请求失败:', error);
-                    this.messages.push({
-                        id: Date.now() + 1,
+                onMounted(() => {
+                    messages.value.push({
+                        id: 0,
                         role: 'assistant',
-                        content: `抱歉，出错了：${error.message}`,
+                        content: '你好！我是Spider AI，有什么可以帮助您的吗？',
+                        timestamp: new Date() // 直接存储Date对象
+                    });
+                });
+
+                // 组件卸载时清理请求
+                onUnmounted(() => {
+                    if (abortController) {
+                        abortController.abort();
+                    }
+                });
+
+                // 简化时间格式化
+                const formatTime = (timestamp) => {
+                    if (!timestamp) return '';
+                    const date = new Date(timestamp);
+                    // 如果日期无效，返回空字符串
+                    if (isNaN(date.getTime())) return '';
+                    return date.toLocaleTimeString('zh-CN', { hour12: false });
+                };
+
+                // 发送消息（移除了有问题的防抖逻辑）
+                const sendMessage = async () => {
+                    if (!userInput.value.trim() || isLoading.value) return;
+
+                    const userMessage = userInput.value.trim();
+                    messages.value.push({
+                        id: Date.now(),
+                        role: 'user',
+                        content: userMessage,
                         timestamp: new Date()
                     });
-                } finally {
-                    this.isLoading = false;
-                    this.isStreaming = false;
-                    this.currentStreamingMessage = '';
-                }
-            },
-            
-            
-            async sendNormalRequest(userMessage) {
-                // 为AI的回复预先创建一个“空”消息卡片，用于后续追加内容
-                const aiMessageIndex = this.messages.length;
-                this.messages.push({
-                    id: Date.now(), // 唯一ID
-                    role: 'assistant',
-                    content: '', // 内容初始为空，后续逐步追加
-                    timestamp: new Date(),
-                    isStreaming: true // 可选标记，用于UI显示加载状态
-                });
 
-                try {
-                    const proxyUrl = 'https://respider-wiki.vercel.app/api/chat';
-                    const response = await fetch(proxyUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            messages: this.messages.slice(0, -1).map(msg => ({ // 注意：不包含刚创建的空白AI消息
-                                role: msg.role,
-                                content: msg.content
-                            })),
-                            stream: true // 启用流
-                        })
+                    userInput.value = '';
+                    isLoading.value = true;
+
+                    try {
+                        await sendNormalRequest(userMessage);
+                    } catch (error) {
+                        // 忽略因取消请求而产生的 AbortError
+                        if (error.name !== 'AbortError') {
+                            console.error('请求失败:', error);
+                            messages.value.push({
+                                id: Date.now() + 1,
+                                role: 'assistant',
+                                content: `抱歉，出错了：${error.message}`,
+                                timestamp: new Date()
+                            });
+                        }
+                    } finally {
+                        isLoading.value = false;
+                    }
+                };
+
+                // 流式请求函数
+                const sendNormalRequest = async (userMessage) => {
+                    // 为本次请求创建新的控制器
+                    abortController = new AbortController();
+                    const aiMessageIndex = messages.value.length;
+
+                    messages.value.push({
+                        id: Date.now(),
+                        role: 'assistant',
+                        content: '', // 初始为空
+                        timestamp: new Date()
                     });
 
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`API请求失败：${response.status} - ${errorText}`);
-                    }
+                    try {
+                        const proxyUrl = 'https://respider-wiki.vercel.app/api/chat';
+                        const response = await fetch(proxyUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                messages: messages.value.slice(0, -1).map(msg => ({
+                                    role: msg.role,
+                                    content: msg.content
+                                })),
+                                stream: true
+                            }),
+                            signal: abortController.signal
+                        });
 
-                    // 以下为处理流式响应的核心逻辑
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder('utf-8');
-                    let accumulatedText = '';
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`API请求失败：${response.status} - ${errorText}`);
+                        }
 
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break; // 流结束
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder('utf-8');
+                        let accumulatedText = '';
 
-                        const chunk = decoder.decode(value, { stream: true });
-                        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
 
-                        for (const line of lines) {
-                            if (line.startsWith('data: ')) {
-                                const data = line.slice(6); // 去掉 'data: ' 前缀
-                                if (data === '[DONE]') continue; // 流结束信号
+                            const chunk = decoder.decode(value, { stream: true });
+                            const lines = chunk.split('\n').filter(line => line.trim() !== '');
 
-                                try {
-                                    const parsed = JSON.parse(data);
-                                    const contentDelta = parsed.choices[0]?.delta?.content || '';
-                                    if (contentDelta) {
-                                        accumulatedText += contentDelta;
-                                        // 关键：实时更新第 aiMessageIndex 条消息的内容
-                                        this.messages[aiMessageIndex].content = accumulatedText;
+                            for (const line of lines) {
+                                if (line.startsWith('data: ')) {
+                                    const data = line.slice(6);
+                                    if (data === '[DONE]') continue;
+
+                                    try {
+                                        const parsed = JSON.parse(data);
+                                        const contentDelta = parsed.choices[0]?.delta?.content || '';
+                                        if (contentDelta) {
+                                            accumulatedText += contentDelta;
+                                            // 响应式更新内容
+                                            messages.value[aiMessageIndex].content = accumulatedText;
+                                        }
+                                    } catch (e) {
+                                        console.warn('解析流数据失败:', e, '原始数据:', data);
                                     }
-                                } catch (e) {
-                                    console.warn('解析流数据失败:', e, '原始数据:', data);
                                 }
                             }
                         }
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            console.log('请求已被用户取消');
+                            // 移除因取消而产生的空AI消息
+                            messages.value.splice(aiMessageIndex, 1);
+                            throw error; // 重新抛出，让 sendMessage 中的错误处理忽略它
+                        } else {
+                            console.error('流式请求过程中发生错误:', error);
+                            // 更新为错误信息
+                            messages.value[aiMessageIndex].content = `请求出错：${error.message}`;
+                        }
+                    } finally {
+                        // 确保最终时间戳正确（仅当消息未被取消时）
+                        if (messages.value[aiMessageIndex]) {
+                            messages.value[aiMessageIndex].timestamp = new Date();
+                        }
+                        // 本次请求结束，清理控制器
+                        abortController = null;
                     }
-                } catch (error) {
-                    console.error('流式请求过程中发生错误:', error);
-                    // 如果出错，更新那条空白AI消息为错误信息
-                    this.messages[aiMessageIndex].content = `抱歉，请求AI时出现错误：${error.message}`;
-                } finally {
-                    // 流结束，无论成功失败，移除流式标记
-                    if (this.messages[aiMessageIndex]) {
-                        this.messages[aiMessageIndex].isStreaming = false;
-                        // 确保最终时间戳是完整的
-                        this.messages[aiMessageIndex].timestamp = new Date();
+                };
+
+                // 简化后的Shift+Enter处理：阻止默认换行，改为发送
+                const handleShiftEnter = (event) => {
+
+                };
+
+                // 滚动到底部
+                const scrollToBottom = async () => {
+                    await nextTick();
+                    if (messagesContainer.value) {
+                        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
                     }
-                    this.isLoading = false;
-                }
-            },
-            scrollToBottom() {
-                this.$nextTick(() => {
-                    const container = this.$refs.messagesContainer;
-                    if (container) {
-                        container.scrollTop = container.scrollHeight;
-                    }
-                });
+                };
+
+                // 监听消息变化并自动滚动
+                watch(messages, scrollToBottom, { deep: true });
+
+                return {
+                    userInput,
+                    messages,
+                    isLoading,
+                    messagesContainer,
+                    formatTime,
+                    sendMessage,
+                    handleShiftEnter, 
+                    sendNormalRequest,
+                    scrollToBottom
+                };
             }
-        }, 
-        watch: {
-            // 当消息更新时自动滚动
-            messages: {
-                handler() {
-                    this.scrollToBottom();
-                },
-                deep: true
-            }
-        }
-    }).mount("#ai-assistant");
+        }).mount("#ai-assistant");
     </script>
 </body>
 </html>

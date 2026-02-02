@@ -31,9 +31,9 @@
                 <!-- 聊天消息区域 -->
                 <div class="chat-messages" ref="messagesContainer">
                     <!-- 遍历 messages 数组，动态生成消息 -->
-                    <div v-for="(msg, index) in messages" :key="index" :class="['message', msg.role === 'user' ? 'user-message' : 'ai-message']">
+                    <div v-for="(msg, index) in messages" :key="msg.id" :class="['message', msg.role === 'user' ? 'user-message' : 'ai-message']">
                         <div class="message-header">
-                            <strong>{{ msg.role === 'user' ? '你' : 'AI助手' }}</strong>
+                            <strong>{{ msg.role === 'user' ? '你' : 'Spider AI' }}</strong>
                             <span class="time">{{ formatTime(msg.timestamp) }}</span>
                         </div>
                         <div class="message-content">
@@ -62,10 +62,6 @@
     <script type="module">
     import { createApp } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 
-    // ⚠️ 警告：这里直接暴露API Key，仅用于测试！
-    // 在生产环境中应该使用后端代理
-    const API_KEY = '8c04a89e8f1049d480959bf25a404c4c.jrcB82pBNGfCgSZv'; // 这是你的智谱AI密钥，请确保准确
-    const API_BASE_URL = 'https://open.bigmodel.cn/api/paas/v4'; // 智谱AI的API地址
 
     createApp({
         data() {
@@ -80,6 +76,7 @@
         mounted() {
             // 添加欢迎消息
             this.messages.push({
+                id: 0,
                 role: 'assistant',
                 content: '你好！我是ReSpider Wiki的AI助手，有什么可以帮助您的吗？',
                 timestamp: new Date()
@@ -98,6 +95,7 @@
                 // 添加用户消息
                 const userMessage = this.userInput.trim();
                 this.messages.push({
+                    id: Date.now(),
                     role: 'user',
                     content: userMessage,
                     timestamp: new Date()
@@ -115,6 +113,7 @@
                 } catch (error) {
                     console.error('请求失败:', error);
                     this.messages.push({
+                        id: Date.now() + 1,
                         role: 'assistant',
                         content: `抱歉，出错了：${error.message}`,
                         timestamp: new Date()
@@ -161,6 +160,7 @@
                     if (data && data.choices && data.choices[0] && data.choices[0].message) {
                         const aiReply = data.choices[0].message.content;
                         this.messages.push({
+                            id: Date.now(),
                             role: 'assistant',
                             content: aiReply,
                             timestamp: new Date()
@@ -173,6 +173,7 @@
                 } catch (error) {
                     console.error('请求过程中发生错误:', error);
                     this.messages.push({
+                        id: Date.now(),
                         role: 'assistant',
                         content: `抱歉，请求AI时出现错误：${error.message}`,
                         timestamp: new Date()

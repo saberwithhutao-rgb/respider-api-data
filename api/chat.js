@@ -1,4 +1,4 @@
-// /api/chat.js
+// /api/chat.js - 修改后的Vercel中转函数
 export default async function handler(req, res) {
   // 只处理POST请求
   if (req.method !== 'POST') {
@@ -7,53 +7,44 @@ export default async function handler(req, res) {
 
   try {
     const { messages, stream = false } = req.body;
-    const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY;
-    const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+    // 注意：这里指向你的阿里云HTTP后端
+    const UPSTREAM_URL = 'http://121.43.104.134:3000/api/chat';
 
-    // 转发请求到智谱AI，注意这里的 stream 参数来自前端
-    const upstreamResponse = await fetch(ZHIPU_API_URL, {
+    console.log(`Vercel中转: 转发至阿里云服务器, stream模式: ${stream}`);
+
+    // 转发请求到阿里云服务器
+    const response = await fetch(UPSTREAM_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ZHIPU_API_KEY}`
+        'Content-Type': 'application/json'
+        // 注意：我们不再需要传递智谱API密钥，这个密钥已经安全存储在阿里云服务器上
       },
       body: JSON.stringify({
-        model: 'glm-4-flash',
         messages: messages,
-        stream: stream // 关键：将此参数原样传递给智谱
+        stream: stream
       })
     });
 
-    if (!upstreamResponse.ok) {
-      throw new Error(`Upstream error: ${upstreamResponse.status}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('阿里云服务器错误:', response.status, errorText);
+      throw new Error(`Upstream error: ${response.status}`);
     }
 
-    // 关键：如果前端请求流式，则我们以流式方式返回
+    // 关键：将阿里云服务器的响应原样返回给前端
     if (stream) {
-      // 设置正确的响应头，以便前端识别为流
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
-      // 将智谱AI的流直接管道传输给前端
-      upstreamResponse.body.pipeTo(new WritableStream({
-        write(chunk) {
-          res.write(chunk);
-        },
-        close() {
-          res.end();
-        }
-      })).catch(error => {
-        console.error('Stream pipe error:', error);
-        res.end();
-      });
+      // 将阿里云返回的流式响应直接管道传输给前端
+      response.body.pipe(res);
     } else {
-      // 非流式处理保持不变
-      const data = await upstreamResponse.json();
-      res.status(200).json(data);
+      const data = await response.json();
+      res.json(data);
     }
 
   } catch (error) {
-    console.error('Proxy Error:', error);
+    console.error('Vercel中转函数错误:', error);
     if (!res.headersSent) {
       res.status(500).json({ error: 'Internal Server Error' });
     }

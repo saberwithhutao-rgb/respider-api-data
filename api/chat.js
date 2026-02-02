@@ -30,7 +30,7 @@ export default async function handler(req, res) {
   // 5. 主逻辑：转发请求到阿里云
   try {
     const { messages, stream = false } = req.body;
-    const UPSTREAM_URL = 'http://121.43.104.134:3000/api/chat';
+    const UPSTREAM_URL = 'http://121.43.104.134:80/api/chat';
 
     console.log(`Vercel中转: 转发至阿里云, stream: ${stream}, 来源: ${requestOrigin}`);
 

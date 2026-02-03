@@ -193,3 +193,41 @@
         font-size: 14px; /* 更小屏幕适当增大字体以方便输入 */
     }
 }
+
+/* 输出模式切换样式 - 修改后 */
+.output-mode {
+    margin-bottom: 15px;
+    text-align: center;
+    padding: 10px;
+    /* 主要修改：使用深色背景，与白色容器形成对比 */
+    background-color: #f8f9fa; /* 改为浅灰色背景 */
+    border-radius: 8px;
+    /* 可选：添加一个边框使其更清晰 */
+    border: 1px solid #e9ecef;
+}
+.output-mode button {
+    padding: 6px 15px;
+    margin: 0 10px;
+    border: 1px solid #4CAF50;
+    background-color: transparent;
+    color: #4CAF50;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.output-mode button.active {
+    background-color: #4CAF50;
+    color: white;
+}
+.output-mode button:hover:not(.active) {
+    background-color: rgba(76, 175, 80, 0.1);
+}
+.output-mode label {
+    /* 添加：确保标签文字也是深色 */
+    color: #333;
+}
+.mode-hint {
+    /* 修改：使用更深的颜色 */
+    color: #666;
+    font-size: 0.9em;
+}

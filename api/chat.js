@@ -29,15 +29,15 @@ export default async function handler(req, res) {
 
   // 5. 主逻辑：转发请求到阿里云
   try {
-    const { messages, stream = false } = req.body;
+    const { messages, stream = false, selectedModel = 'glm-4' } = req.body; 
     const UPSTREAM_URL = 'http://121.43.104.134:80/api/chat';
 
-    console.log(`Vercel中转: 转发至阿里云, stream: ${stream}, 来源: ${requestOrigin}`);
+    console.log(`Vercel中转: 转发至阿里云, 模型: ${selectedModel}, stream: ${stream}`);
 
     const response = await fetch(UPSTREAM_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, stream })
+      body: JSON.stringify({ messages, stream, selectedModel })
     });
 
     if (!response.ok) {

@@ -50,6 +50,17 @@
                     </button>
                     <span class="mode-hint">(当前：{{ useStream ? '流式' : '非流式' }})</span>
                 </div>
+                <!-- 新增：模型选择区域 -->
+                <div class="model-selector">
+                    <label>选择AI模型：</label>
+                    <select v-model="selectedModel">
+                        <option value="glm-4">智谱AI (GLM-4)</option>
+                        <option value="qwen-turbo">通义千问 (Turbo)</option>
+                        <!-- 未来可以轻松添加更多选项，例如： -->
+                        <!-- <option value="moonshot">Kimi (Moonshot)</option> -->
+                    </select>
+                    <span class="model-hint">当前：{{ getModelName(selectedModel) }}</span>
+                </div>
                 <!-- 输入区域 -->
                 <div class="input-area">
                     <textarea 
@@ -79,6 +90,12 @@
                 const isLoading = ref(false);
                 const messagesContainer = ref(null); // DOM 引用
                 let abortController = null; // 用于取消请求
+                const selectedModel = ref('glm-4'); // 默认模型
+
+                const getModelName = (modelValue) => {
+                const map = { 'glm-4': '智谱GLM-4', 'qwen-turbo': '通义千问Turbo' };
+                return map[modelValue] || modelValue;
+                };
 
                 onMounted(() => {
                     messages.value.push({
@@ -127,9 +144,9 @@
 
                     try {
                         if (useStream.value) {
-                            await sendNormalRequest(userMessage);
+                            await sendNormalRequest(userMessage, selectedModel.value);
                         } else {
-                            await sendNonStreamRequest(userMessage);
+                            await sendNonStreamRequest(userMessage, selectedModel.value);
                         }
                      } catch (error) {
                         // 忽略因取消请求而产生的 AbortError

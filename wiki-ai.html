@@ -241,7 +241,8 @@
                                     role: msg.role,
                                     content: msg.content
                                 })),
-                                stream: true
+                                stream: true,
+                                selectedModel: selectedModel.value
                             }),
                             signal: abortController.signal
                         });
